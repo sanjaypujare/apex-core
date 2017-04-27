@@ -55,6 +55,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.net.NetUtils;
 import org.apache.hadoop.security.Credentials;
@@ -633,6 +634,15 @@ public class StreamingAppMasterService extends CompositeService
         config = new Configuration(config);
         config.set("hadoop.http.filter.initializers", StramWSFilterInitializer.class.getCanonicalName());
       }
+      String customSSLConfig = dag.getValue(LogicalPlan.CUSTOM_SSL_SERVER_CONFIG);
+      LOG.info("DTSAN customSSLConfig ={}", customSSLConfig);
+      if (StringUtils.isNotEmpty(customSSLConfig)) {
+        config.addResource(new Path(customSSLConfig));
+      }
+      LOG.info("DTSAN config object {}", config.toString());
+      LOG.info("ssl.server.keystore.location {} ssl.server.keystore.keypassword {} ssl.server.keystore.password {}",
+          config.get("ssl.server.keystore.location"), config.get("ssl.server.keystore.keypassword"),
+          config.get("ssl.server.keystore.password"));
       WebApp webApp = WebApps.$for("stram", StramAppContext.class, appContext, "ws").with(config).start(new StramWebApp(this.dnmgr));
       LOG.info("Started web service at port: " + webApp.port());
       appMasterTrackingUrl = NetUtils.getConnectAddress(webApp.getListenerAddress()).getHostName() + ":" + webApp.port();

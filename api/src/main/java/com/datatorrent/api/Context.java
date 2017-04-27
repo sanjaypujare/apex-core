@@ -531,6 +531,11 @@ public interface Context
      */
     Attribute<String> LIBRARY_JARS = new Attribute<>(String2String.getInstance());
 
+    /**
+     * Configuration file for custom SSL keystore to override ssl-server.xml
+     */
+    Attribute<String> CUSTOM_SSL_SERVER_CONFIG = new Attribute<>(String2String.getInstance());
+
     @SuppressWarnings(value = "FieldNameHidesFieldInSuperclass")
     long serialVersionUID = AttributeMap.AttributeInitializer.initialize(DAGContext.class);
   }
